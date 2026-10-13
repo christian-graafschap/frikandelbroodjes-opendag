@@ -22,8 +22,23 @@ jobs:
       - name: Afhankelijkheden installeren
         run: npm ci
 
-      - name: Playwright-browsers installeren
-        run: npx playwright install --with-deps chromium
+      - name: Playwright-versie bepalen
+        id: pw
+        run: echo "versie=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Chromium uit cache
+        id: pw-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-${{ runner.os }}-${{ steps.pw.outputs.versie }}
+
+      - name: Chromium downloaden (bij cache miss)
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+
+      - name: Systeemafhankelijkheden installeren
+        run: npx playwright install-deps chromium
 
       - name: Tests uitvoeren
         run: npm test
