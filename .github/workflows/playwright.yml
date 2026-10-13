@@ -5,6 +5,15 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   test:
     name: Actiepagina testen
@@ -43,10 +52,29 @@ jobs:
       - name: Tests uitvoeren
         run: npm test
 
-      - name: Rapport publiceren
+      - name: Rapport bewaren als artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 14
+
+      - name: Rapport klaarzetten voor Pages
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: playwright-report/
+
+  publiceren:
+    name: Rapport publiceren op GitHub Pages
+    if: always() && github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deployen
+        id: deploy
+        uses: actions/deploy-pages@v4
