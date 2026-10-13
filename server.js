@@ -180,7 +180,14 @@ app.use(express.static(publiek));
 
 /* ---------- Start ---------- */
 if (lokaal) {
-  console.log("LOCAL_ONLY: GitHub overgeslagen, wijzigingen blijven alleen in het geheugen.");
+  try {
+    const opSchijf = JSON.parse(readFileSync(configOpSchijf, "utf8"));
+    huidig = valideer({ ...STANDAARD, ...opSchijf });
+    gepusht = structuredClone(huidig);
+    console.log("LOCAL_ONLY: config geladen uit public/config.json.");
+  } catch {
+    console.log("LOCAL_ONLY: geen bruikbare public/config.json, standaardconfig gebruikt.");
+  }
 } else {
   try {
     const opGitHub = await haalOp();
