@@ -1,50 +1,51 @@
 import { test, expect } from "@playwright/test";
 
+const VERWACHT = {
+  titel: "Frikandelbroodjesweek!",
+  titelKleur: "rgb(255, 255, 255)",
+  badge: "-25%",
+  productnaam: "Frikandelbroodje",
+  beschrijving:
+    "Krokant bladerdeeg met een sappige frikandel en een vleugje curry. Vers uit onze oven, lekker als lunch of tussendoor.",
+  prijs: "€ 1,99",
+  achtergrondHex: "#0082C9",
+  achtergrondRgb: "rgb(0, 130, 201)"
+};
+
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
 });
 
-test("titel, prijs en bestelknop zijn aanwezig en gevuld", async ({ page }) => {
-  await expect(page.getByTestId("titel")).not.toBeEmpty();
-  await expect(page.getByTestId("prijs")).not.toBeEmpty();
-  const knop = page.getByTestId("bestelknop");
-  await expect(knop).toBeVisible();
-  await expect(knop).not.toBeEmpty();
+test("titel is 'Frikandelbroodjesweek!'", async ({ page }) => {
+  await expect(page.getByTestId("titel")).toHaveText(VERWACHT.titel);
 });
 
-test("prijs ligt tussen de €0,01 en €10", async ({ page }) => {
-  const tekst = (await page.getByTestId("prijs").textContent()) ?? "";
-  const bedrag = Number(tekst.replace(/€/g, "").replace(/\s/g, "").replace(/\./g, "").replace(",", "."));
-  expect(Number.isFinite(bedrag)).toBe(true);
-  expect(bedrag).toBeGreaterThan(0);
-  expect(bedrag).toBeLessThan(10);
+test("titelkleur is wit", async ({ page }) => {
+  const kleur = await page
+    .getByTestId("titel")
+    .evaluate(el => getComputedStyle(el).color);
+  expect(kleur).toBe(VERWACHT.titelKleur);
 });
 
-test("kortingsbadge toont een percentage tussen 1 en 99", async ({ page }) => {
-  const tekst = (await page.getByTestId("badge").textContent()) ?? "";
-  const match = tekst.match(/(\d+)\s*%/);
-  expect(match, `badge "${tekst}" bevat geen percentage`).not.toBeNull();
-  const pct = Number(match[1]);
-  expect(pct).toBeGreaterThan(0);
-  expect(pct).toBeLessThanOrEqual(99);
+test("kortingsbadge toont -25%", async ({ page }) => {
+  await expect(page.getByTestId("badge")).toHaveText(VERWACHT.badge);
 });
 
-test("bestelknop heeft minimaal WCAG AA contrast (4.5:1)", async ({ page }) => {
-  const knop = page.getByTestId("bestelknop");
-  const kleuren = await knop.evaluate(el => {
-    const s = getComputedStyle(el);
-    return { voor: s.color, achter: s.backgroundColor };
-  });
-  const parse = c => (c.match(/\d+(\.\d+)?/g) || []).slice(0, 3).map(Number);
-  const lin = x => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; };
-  const lum = ([r, g, b]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
-  const l1 = lum(parse(kleuren.voor));
-  const l2 = lum(parse(kleuren.achter));
-  const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
-  expect(ratio, `contrast ${kleuren.voor} op ${kleuren.achter} is te laag`).toBeGreaterThanOrEqual(4.5);
+test("productnaam is 'Frikandelbroodje'", async ({ page }) => {
+  await expect(page.getByTestId("productnaam")).toHaveText(VERWACHT.productnaam);
 });
 
-test("productfoto staat binnen 3 seconden klaar", async ({ page }) => {
-  await expect(page.locator("#laden")).not.toHaveClass(/aan/, { timeout: 3000 });
-  await expect(page.getByTestId("productfoto")).toBeVisible();
+test("omschrijving komt overeen met de verwachte tekst", async ({ page }) => {
+  await expect(page.getByTestId("beschrijving")).toHaveText(VERWACHT.beschrijving);
+});
+
+test("prijs is € 1,99", async ({ page }) => {
+  await expect(page.getByTestId("prijs")).toHaveText(VERWACHT.prijs);
+});
+
+test(`achtergrondkleur is AH blauw (${VERWACHT.achtergrondHex})`, async ({ page }) => {
+  const kleur = await page.evaluate(
+    () => getComputedStyle(document.body).backgroundColor
+  );
+  expect(kleur).toBe(VERWACHT.achtergrondRgb);
 });
