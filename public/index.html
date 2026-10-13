@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Frikandelbroodjesweek</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Tokens voor het bewerkvenster (volgt licht/donker van het apparaat) */
+:root{
+  --ui-bg:#ffffff; --ui-ink:#1b2430; --ui-muted:#5b6675; --ui-line:#d3dae2; --ui-veld:#f5f7f9; --ui-chip:#eef2f6;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --ui-bg:#1c242e; --ui-ink:#e6ebf1; --ui-muted:#9aa6b5; --ui-line:#2d3845; --ui-veld:#161d25; --ui-chip:#25303c; }
+}
+:root[data-theme="dark"]{ --ui-bg:#1c242e; --ui-ink:#e6ebf1; --ui-muted:#9aa6b5; --ui-line:#2d3845; --ui-veld:#161d25; --ui-chip:#25303c; }
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:#fff7e0;color:#2b2b2b;font-family:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+button,input,select,textarea{font:inherit}
+:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
+
+/* ===================== De website ===================== */
+.shop{container-type:inline-size;position:relative;min-height:100vh}
+.shop-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 20px;background:#fff;border-bottom:1px solid #e7e2d4}
+.logo-plek{border:2px dashed #b9b2a0;border-radius:8px;padding:8px 12px;font-size:.8rem;color:#6b6457;text-align:center;min-width:120px}
+.logo-plek img{display:block;max-height:48px;max-width:170px;height:auto}
+.logo-plek.heeft-logo{border:0;padding:0;min-width:0}
+.opdracht{font-size:.82rem;color:#6b6457;text-align:center}
+
+.banner{background:#14325c;padding:34px 24px 30px;position:relative}
+.banner::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-12deg,transparent 0 22px,rgba(255,255,255,.04) 22px 44px);pointer-events:none}
+.banner-binnen{max-width:980px;margin:0 auto;position:relative}
+.banner-week{color:#ffd166;font-weight:700;margin:0 0 4px;font-size:1rem;position:relative;z-index:1}
+.titel{font-family:"Bricolage Grotesque",Figtree,sans-serif;font-weight:800;font-size:clamp(30px,6.4cqi,64px);line-height:1;letter-spacing:-.02em;margin:0;max-width:16ch;position:relative;z-index:1;overflow-wrap:normal}
+.badge{position:absolute;right:clamp(0px,3cqi,40px);bottom:-60px;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:26px;transform:rotate(-10deg);box-shadow:0 6px 0 rgba(0,0,0,.15);z-index:2;white-space:nowrap}
+
+.product{display:grid;grid-template-columns:1fr 1fr;gap:28px;padding:48px 24px 24px;max-width:1028px;margin:0 auto}
+@container (max-width:640px){ .product{grid-template-columns:1fr;padding:44px 20px 20px} }
+.foto-wrap{background:#ffe7a8;border-radius:22px;aspect-ratio:4/3;position:relative;overflow:hidden;display:grid;place-items:center}
+.foto-wrap img{width:92%;height:auto;display:block}
+.laden{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;gap:10px;background:#fff3cf;padding:20px;text-align:center;font-size:.9rem;color:#5c4a1c}
+.laden.aan{display:flex}
+.balk{width:80%;height:12px;border-radius:6px;background:#f2d58a;overflow:hidden}
+.balk span{display:block;height:100%;width:0;background:#a8641a}
+.info{background:#fff;border-radius:22px;padding:22px;position:relative;display:flex;flex-direction:column;gap:12px}
+.productnaam{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:28px;line-height:1.1;margin:0;overflow-wrap:normal}
+.beschrijving{margin:0;color:#4a4a4a;max-width:46ch}
+.prijzen{display:flex;align-items:baseline;gap:12px;margin-top:auto}
+.oud{text-decoration:line-through;color:#7a7a7a;font-size:1.05rem}
+.prijs{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:40px;color:#14325c}
+.bestelknop{border:0;border-radius:12px;padding:14px 18px;font-weight:700;font-size:17px;cursor:pointer;white-space:nowrap;width:100%;text-align:center}
+.mandje{font-size:.95rem;color:#4a4a4a;display:flex;justify-content:space-between;gap:10px;border-top:1px dashed #ddd;padding-top:10px}
+.mandje strong{color:#2b2b2b}
+
+.reviews{padding:8px 24px 28px;max-width:1028px;margin:0 auto}
+.reviews h3{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;margin:8px 0 10px}
+.review{margin:0 0 10px;max-width:60ch}
+.review b{display:block}
+
+.cookie{background:#fff;border:2px solid #2b2b2b;border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:.92rem;margin:0 auto 24px;max-width:980px}
+.cookie-rij{padding:0 24px}
+.cookie p{margin:0;flex:1;min-width:200px}
+.cookie button{border:1px solid #2b2b2b;background:#2b2b2b;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer}
+.cookie.boven{margin:16px auto 0}
+.cookie.kaart{position:absolute;left:12px;right:12px;bottom:12px;margin:0;z-index:5;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 16px);transform:translateX(-50%);background:#2b2b2b;color:#fff;padding:8px 14px;border-radius:10px;font-size:.9rem;opacity:0;transition:opacity .2s;pointer-events:none;z-index:200}
+.toast.aan{opacity:1}
+
+/* Bewerkbare onderdelen herkenbaar maken (alleen in bewerkmodus) */
+body.bewerkmodus .shop [data-edit]{outline:2px dashed #e11d48;outline-offset:3px;cursor:context-menu}
+body.bewerkmodus .shop [data-edit]:hover{outline-color:#be123c}
+
+/* Potloodknop voor tablets (geen rechtermuisknop) */
+.potlood{position:fixed;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);z-index:150;border:0;border-radius:999px;padding:12px 16px;background:#e11d48;color:#fff;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer}
+.potlood[aria-pressed="true"]{background:#2b2b2b}
+
+/* Bewerkvenster */
+.editor{position:fixed;z-index:300;width:min(340px,calc(100vw - 24px));background:var(--ui-bg);color:var(--ui-ink);border:1px solid var(--ui-line);border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.28);padding:14px;display:none}
+.editor.open{display:block}
+.editor h4{margin:0 0 10px;font-size:1.05rem;display:flex;justify-content:space-between;align-items:center}
+.editor .sluit{border:0;background:none;color:var(--ui-muted);font-size:1.3rem;cursor:pointer;line-height:1}
+.veld{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.veld label{font-size:.85rem;font-weight:600;color:var(--ui-muted)}
+.veld input[type=text],.veld textarea,.veld select{width:100%;border:1px solid var(--ui-line);border-radius:8px;padding:8px 10px;background:var(--ui-veld);color:var(--ui-ink)}
+.veld textarea{min-height:90px;resize:vertical}
+.veld input[type=color]{width:100%;height:40px;border:1px solid var(--ui-line);border-radius:8px;background:var(--ui-veld);padding:3px}
+.teller{font-size:.8rem;color:var(--ui-muted);align-self:flex-end}
+.knop-sec{border:1px solid var(--ui-line);background:var(--ui-chip);color:var(--ui-ink);border-radius:8px;padding:8px 10px;cursor:pointer;font-weight:600;width:100%}
+</style>
+</head>
+<body>
+<div class="shop" id="shop">
+  <header class="shop-head">
+    <!-- Logo's worden automatisch geladen uit public/logos/ (zie README) -->
+    <div class="logo-plek" data-logo="graafschap-college" data-alt="Graafschap College" data-testid="logo-school">Logo Graafschap College</div>
+    <div class="opdracht">Stageopdracht<br>Software Developer</div>
+    <div class="logo-plek" data-logo="ah" data-alt="AH" data-testid="logo-klant">Logo AH</div>
+  </header>
+
+  <div class="cookie-rij" id="cookieBoven"></div>
+
+  <section class="banner">
+    <div class="banner-binnen">
+      <p class="banner-week">Alleen deze week</p>
+      <h1 class="titel" id="titel" data-edit="titel" data-testid="titel"></h1>
+      <div class="badge" id="badge" data-edit="badge" data-testid="badge"></div>
+    </div>
+  </section>
+
+  <section class="product">
+    <div class="foto-wrap" id="fotoWrap" data-edit="foto">
+      <img id="foto" alt="" data-testid="productfoto">
+      <div class="laden" id="laden">
+        <span id="ladenTekst">Laden…</span>
+        <div class="balk"><span id="ladenBalk"></span></div>
+      </div>
+    </div>
+    <div class="info" id="info">
+      <h2 class="productnaam" id="productnaam" data-edit="productnaam" data-testid="productnaam"></h2>
+      <p class="beschrijving" id="beschrijving" data-edit="beschrijving" data-testid="beschrijving"></p>
+      <div class="prijzen">
+        <span class="oud" data-testid="oude-prijs">€ 2,65</span>
+        <span class="prijs" id="prijs" data-edit="prijs" data-testid="prijs"></span>
+      </div>
+      <button class="bestelknop" id="bestelknop" data-edit="bestelknop" data-testid="bestelknop"></button>
+      <div class="mandje">
+        <span>In je mandje: <strong id="aantal" data-testid="mandje-aantal">0</strong> stuks</span>
+        <span>Totaal: <strong id="totaal" data-testid="mandje-totaal"></strong></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="reviews" data-testid="reviews">
+    <h3>Wat klanten zeggen</h3>
+    <p class="review"><b>Sanne uit Doetinchem</b>Nog warm toen ik thuiskwam. Twee gekocht, één over. Niet lang.</p>
+    <p class="review"><b>Mo uit Zutphen</b>Beste lunch van de week, en ik heb er drie gehad.</p>
+  </section>
+
+  <div class="cookie-rij" id="cookieOnder">
+    <div class="cookie" id="cookie" data-edit="cookiebanner" data-testid="cookiebanner">
+      <p>🍪 Wij gebruiken cookies. De digitale soort, helaas niet de lekkere.</p>
+      <button type="button">Accepteren</button><button type="button">Weigeren</button>
+    </div>
+  </div>
+</div>
+
+<button class="potlood" id="potlood" aria-pressed="false">✏️ Bewerken</button>
+<div class="toast" id="toast" role="status"></div>
+<div class="editor" id="editor" role="dialog" aria-labelledby="editorTitel"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============ Configuratie: wordt later config.json in de repo ============ */
+const STANDAARD = {
+  titel:        { tekst: "Frikandelbroodjesweek!", kleur: "#ffffff" },
+  badge:        { tekst: "-25%", achtergrond: "#c2410c" },
+  productnaam:  { tekst: "Frikandelbroodje" },
+  beschrijving: { tekst: "Krokant bladerdeeg met een sappige frikandel en een vleugje curry. Vers uit onze oven, lekker als lunch of tussendoor." },
+  prijs:        { tekst: "€ 1,99" },
+  bestelknop:   { tekst: "In winkelmand", kleur: "#ffffff", achtergrond: "#15803d" },
+  foto:         { bestand: "broodje.webp", alt: "Vers frikandelbroodje met krokant bladerdeeg" },
+  cookiebanner: { positie: "onder" },
+  pagina:       { achtergrond: "#fff7e0" }
+};
+const FOTOS = {
+  "broodje.webp":           { kb: 84,    laadtijd: 0 },
+  "broodje-groot.png":      { kb: 2150,  laadtijd: 2500 },
+  "IMG_4382_ORIGINEEL.jpg": { kb: 24300, laadtijd: 9000 }
+};
+
+const kopie = o => JSON.parse(JSON.stringify(o));
+let config = kopie(STANDAARD);
+let aantal = 0;
+let offline = false;
+
+/* ============ Opslaan: naar de backend, die commit en pusht naar GitHub ============ */
+let wachtOpOpslaan = null, gewijzigd = false;
+function bijWijziging(){
+  if(offline) return;
+  gewijzigd = true;
+  clearTimeout(wachtOpOpslaan);
+  wachtOpOpslaan = setTimeout(opslaan, 5000);   // vangnet als het bewerkvenster open blijft
+}
+async function opslaan(){
+  clearTimeout(wachtOpOpslaan);
+  if(offline || !gewijzigd) return;
+  gewijzigd = false;
+  try{
+    const r = await fetch("api/config", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(config) });
+    if(!r.ok) throw new Error((await r.json().catch(()=>({}))).fout || r.status);
+    toast("Opgeslagen en naar GitHub gestuurd");
+  }catch(e){
+    toast("Opslaan mislukt: " + e.message);
+  }
+}
+async function laadConfig(){
+  try{
+    const r = await fetch("config.json", { cache:"no-store" });
+    if(!r.ok) throw new Error(r.status);
+    config = Object.assign(kopie(STANDAARD), await r.json());
+  }catch(e){
+    offline = true;
+    toast("Geen server gevonden: wijzigingen worden niet opgeslagen");
+  }
+  teken();
+}
+// Verborgen reset voor de docent: Shift + Alt + R
+document.addEventListener("keydown", async e=>{
+  if(!(e.shiftKey && e.altKey && e.code === "KeyR")) return;
+  e.preventDefault();
+  if(offline || !confirm("Pagina terugzetten naar de standaardinstellingen?")) return;
+  const r = await fetch("api/reset", { method:"POST" });
+  toast(r.ok ? "Teruggezet en naar GitHub gestuurd" : "Reset mislukt");
+  aantal = 0; laadConfig();
+});
+
+/* ============ Logo's ============ */
+function laadLogo(el){
+  const naam = el.dataset.logo, ext = ["svg","png","webp","jpg"];
+  let i = 0;
+  const img = new Image();
+  img.alt = el.dataset.alt;
+  img.onload = ()=>{ el.textContent=""; el.appendChild(img); el.classList.add("heeft-logo"); };
+  img.onerror = ()=>{ if(++i < ext.length) img.src = `logos/${naam}.${ext[i]}`; };
+  img.src = `logos/${naam}.${ext[0]}`;
+}
+document.querySelectorAll("[data-logo]").forEach(laadLogo);
+
+/* ============ Hulpfuncties ============ */
+const $ = id => document.getElementById(id);
+const euro = n => new Intl.NumberFormat("nl-NL",{style:"currency",currency:"EUR"}).format(n);
+// Nederlandse notatie: punt = duizendtal, komma = decimaal. "€1.99" wordt dus 199.
+function leesPrijs(t){
+  const s = String(t).replace(/€/g,"").replace(/\s/g,"");
+  if(!/^[\d.,]+$/.test(s)) return NaN;
+  return Number(s.replace(/\./g,"").replace(",","."));
+}
+const r1 = n => n.toFixed(1).replace(".",",");
+function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("aan"); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove("aan"),1600); }
+
+/* ============ Productillustratie ============ */
+const BROODJE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6cf6e"/><stop offset="1" stop-color="#d2872a"/></linearGradient></defs>
+<ellipse cx="200" cy="232" rx="170" ry="34" fill="#ffffff" opacity=".9"/>
+<rect x="34" y="132" width="46" height="46" rx="20" fill="#7a3b1c"/>
+<rect x="320" y="132" width="46" height="46" rx="20" fill="#7a3b1c"/>
+<rect x="62" y="100" width="276" height="116" rx="44" fill="url(#g)"/>
+<g stroke="#b06a1e" stroke-width="7" stroke-linecap="round" fill="none" opacity=".85">
+<path d="M120 120 l-22 74"/><path d="M168 116 l-22 82"/><path d="M216 116 l-22 82"/><path d="M264 116 l-22 82"/><path d="M308 124 l-18 66"/></g>
+<path d="M92 118 q60 -20 216 0" stroke="#fff3c4" stroke-width="8" stroke-linecap="round" fill="none" opacity=".7"/>
+</svg>`;
+const BROODJE_SRC = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(BROODJE_SVG);
+
+/* ============ Pagina tekenen op basis van de config ============ */
+let laadToken = 0, getoondBestand = null;
+function teken(){
+  const c = config;
+  $("titel").textContent = c.titel.tekst;          // altijd textContent: invoer wordt nooit als HTML uitgevoerd
+  $("titel").style.color = c.titel.kleur;
+  $("badge").textContent = c.badge.tekst;
+  $("badge").style.background = c.badge.achtergrond;
+  $("productnaam").textContent = c.productnaam.tekst;
+  $("beschrijving").textContent = c.beschrijving.tekst;
+  $("prijs").textContent = c.prijs.tekst;
+  const knop = $("bestelknop");
+  knop.textContent = c.bestelknop.tekst;
+  knop.style.color = c.bestelknop.kleur;
+  knop.style.background = c.bestelknop.achtergrond;
+  $("foto").alt = c.foto.alt;
+  document.body.style.background = c.pagina.achtergrond;
+  $("aantal").textContent = aantal;
+  $("totaal").textContent = euro(aantal * leesPrijs(c.prijs.tekst));
+
+  const cookie = $("cookie");
+  cookie.classList.remove("boven","kaart");
+  if(c.cookiebanner.positie === "boven"){ $("cookieBoven").appendChild(cookie); cookie.classList.add("boven"); }
+  else if(c.cookiebanner.positie === "kaart"){ $("info").appendChild(cookie); cookie.classList.add("kaart"); }
+  else { $("cookieOnder").appendChild(cookie); }
+
+  if(getoondBestand !== c.foto.bestand) laadFoto(c.foto.bestand);
+}
+
+function laadFoto(bestand){
+  getoondBestand = bestand;
+  const info = FOTOS[bestand], token = ++laadToken;
+  const img = $("foto"), laden = $("laden");
+  img.dataset.bestand = bestand;
+  if(!info.laadtijd){ laden.classList.remove("aan"); img.src = BROODJE_SRC; img.style.visibility="visible"; return; }
+  img.style.visibility = "hidden"; laden.classList.add("aan");
+  const start = performance.now(), mb = info.kb/1000;
+  (function stap(nu){
+    if(token !== laadToken) return;
+    const f = Math.min(1,(nu-start)/info.laadtijd);
+    $("ladenBalk").style.width = (f*100)+"%";
+    $("ladenTekst").textContent = `${bestand} laden… ${r1(f*mb)} van ${r1(mb)} MB`;
+    if(f<1) requestAnimationFrame(stap);
+    else { laden.classList.remove("aan"); img.src = BROODJE_SRC; img.style.visibility="visible"; }
+  })(start);
+}
+
+/* ============ Bewerkvenster ============ */
+const EDITORS = {
+  titel:        { titel:"Actietitel", velden:[["tekst","text","Tekst"],["kleur","color","Tekstkleur"]] },
+  badge:        { titel:"Kortingsbadge", velden:[["tekst","text","Tekst"],["achtergrond","color","Achtergrondkleur"]] },
+  productnaam:  { titel:"Productnaam", velden:[["tekst","text","Tekst"]] },
+  beschrijving: { titel:"Beschrijving", velden:[["tekst","textarea","Tekst"]] },
+  prijs:        { titel:"Prijs", velden:[["tekst","text","Prijs zoals op de pagina"]] },
+  bestelknop:   { titel:"Bestelknop", velden:[["tekst","text","Tekst"],["kleur","color","Tekstkleur"],["achtergrond","color","Achtergrondkleur"]] },
+  foto:         { titel:"Productfoto", velden:[["bestand","select","Foto",
+                    Object.entries(FOTOS).map(([k,v])=>[k,`${k} (${v.kb>=1000? r1(v.kb/1000)+" MB" : v.kb+" kB"})`])],
+                  ["alt","text","Alt-tekst (voor screenreaders)"]], spreek:true },
+  cookiebanner: { titel:"Cookiebanner", velden:[["positie","select","Positie",[["onder","Onderaan de pagina"],["boven","Bovenaan de pagina"],["kaart","Over de productkaart"]]]] },
+  pagina:       { titel:"Pagina", velden:[["achtergrond","color","Achtergrondkleur"]] }
+};
+
+const editor = $("editor");
+let editorVoor = null;
+function openEditor(sleutel, x, y){
+  const def = EDITORS[sleutel]; if(!def) return;
+  editorVoor = document.activeElement;
+  editor.innerHTML = "";
+  const h = document.createElement("h4"); h.id = "editorTitel"; h.textContent = def.titel;
+  const sluit = document.createElement("button"); sluit.className="sluit"; sluit.type="button"; sluit.setAttribute("aria-label","Sluiten"); sluit.textContent="×";
+  sluit.onclick = sluitEditor; h.appendChild(sluit); editor.appendChild(h);
+
+  def.velden.forEach(([prop,type,label,opties])=>{
+    const v = document.createElement("div"); v.className="veld";
+    const id = `ed-${sleutel}-${prop}`;
+    const lab = document.createElement("label"); lab.htmlFor=id; lab.textContent=label; v.appendChild(lab);
+    let inp;
+    if(type==="textarea"){ inp=document.createElement("textarea"); inp.maxLength=300; }
+    else if(type==="select"){ inp=document.createElement("select"); opties.forEach(([w,t])=>{ const o=document.createElement("option"); o.value=w; o.textContent=t; inp.appendChild(o); }); }
+    else { inp=document.createElement("input"); inp.type=type; if(type==="text") inp.maxLength=120; }
+    inp.id=id; inp.value=config[sleutel][prop];
+    v.appendChild(inp);
+    let teller=null;
+    if(type==="textarea"){ teller=document.createElement("span"); teller.className="teller"; teller.textContent=inp.value.length+" tekens"; v.appendChild(teller); }
+    inp.addEventListener("input",()=>{
+      config[sleutel][prop]=inp.value;
+      if(teller) teller.textContent=inp.value.length+" tekens";
+      teken(); bijWijziging();
+    });
+    editor.appendChild(v);
+  });
+  if(def.spreek){
+    const b=document.createElement("button"); b.type="button"; b.className="knop-sec"; b.textContent="🔊 Laat de screenreader voorlezen";
+    b.onclick=()=>{
+      if(!("speechSynthesis" in window)){ toast("Deze browser kan niet voorlezen"); return; }
+      const tekst = config.foto.alt.trim() || `afbeelding, ${config.foto.bestand.replace(/_/g," underscore ").replace(/\./g," punt ")}`;
+      speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(tekst); u.lang="nl-NL"; speechSynthesis.speak(u);
+    };
+    editor.appendChild(b);
+  }
+  editor.classList.add("open");
+  const w = editor.offsetWidth, hh = editor.offsetHeight;
+  editor.style.left = Math.max(12, Math.min(x, innerWidth - w - 12)) + "px";
+  editor.style.top  = Math.max(12, Math.min(y, innerHeight - hh - 12)) + "px";
+  const eerste = editor.querySelector("input,textarea,select"); if(eerste) eerste.focus();
+}
+function sluitEditor(){ editor.classList.remove("open"); opslaan(); if(editorVoor && editorVoor.focus) editorVoor.focus(); }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && editor.classList.contains("open")) sluitEditor(); });
+document.addEventListener("mousedown",e=>{ if(editor.classList.contains("open") && !editor.contains(e.target)){ editor.classList.remove("open"); opslaan(); } });
+
+// Rechtsklik op een onderdeel; elders op de pagina = paginakleur. Alleen in bewerkmodus.
+const shop = $("shop");
+shop.addEventListener("contextmenu",e=>{
+  if(!bewerkmodus) return;
+  const doel = e.target.closest("[data-edit]");
+  e.preventDefault();
+  openEditor(doel ? doel.dataset.edit : "pagina", e.clientX, e.clientY);
+});
+
+// Bewerkmodus voor tablets: tikken opent het bewerkvenster
+let bewerkmodus = false;
+$("potlood").onclick = function(){
+  bewerkmodus = !bewerkmodus;
+  this.setAttribute("aria-pressed", bewerkmodus);
+  this.textContent = bewerkmodus ? "✓ Klaar met bewerken" : "✏️ Bewerken";
+  document.body.classList.toggle("bewerkmodus", bewerkmodus);
+};
+shop.addEventListener("click",e=>{
+  if(bewerkmodus){
+    const doel = e.target.closest("[data-edit]");
+    e.preventDefault(); e.stopPropagation();
+    openEditor(doel ? doel.dataset.edit : "pagina", e.clientX, e.clientY);
+    return;
+  }
+  if(e.target.closest(".cookie button")) toast("Dit is een demo, er zijn geen cookies 😉");
+}, true);
+
+$("bestelknop").addEventListener("click",()=>{ if(bewerkmodus) return; aantal++; teken(); toast("Toegevoegd aan je mandje"); });
+
+teken();
+laadConfig();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "opendag-frikandelbroodjesweek",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Open dag demo Software Developer: bewerkbare actiepagina die zichzelf commit en pusht naar GitHub",
+  "scripts": {
+    "start": "node --env-file=.env server.js"
+  },
+  "engines": { "node": ">=20.6" },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

@@ -1,0 +1,7 @@
+Zet hier de twee logobestanden neer:
+
+  graafschap-college.svg   (of .png / .webp / .jpg)
+  ah.svg                   (of .png / .webp / .jpg)
+
+De pagina zoekt ze automatisch op deze namen. Ontbreekt een bestand,
+dan blijft het gestippelde vak met de naam staan.
