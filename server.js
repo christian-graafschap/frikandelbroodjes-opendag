@@ -1,7 +1,10 @@
 // Open dag demo: serveert de actiepagina en commit + pusht elke wijziging naar GitHub.
 import express from "express";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+const draaiGit = promisify(execFile);
 
 const {
   GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO,
@@ -151,7 +154,29 @@ app.post("/api/reset", (req, res) => {
 app.get("/api/status", (req, res) => res.json({ bezig: bezig || !!wachtend, ...laatste }));
 
 const publiek = fileURLToPath(new URL("./public", import.meta.url));
+const projectmap = fileURLToPath(new URL(".", import.meta.url));
+const configOpSchijf = fileURLToPath(new URL("./public/config.json", import.meta.url));
+async function git(...args) {
+  const { stdout, stderr } = await draaiGit("git", args, { cwd: projectmap });
+  return (stdout + stderr).trim();
+}
+app.post("/api/push", async (req, res) => {
+  const bericht = String(req.body?.bericht || "").trim().slice(0, 200)
+    || `Wijziging via demo op ${new Date().toLocaleString("nl-NL")}`;
+  try {
+    writeFileSync(configOpSchijf, JSON.stringify(huidig, null, 2) + "\n");
+    await git("add", "-A");
+    const status = await git("status", "--porcelain");
+    if (!status) return res.json({ ok: true, bericht: "Niets om te committen" });
+    await git("-c", "user.email=opendag@example.nl", "-c", "user.name=Open dag demo", "commit", "-m", bericht);
+    await git("push");
+    res.json({ ok: true, bericht: `Gecommit en gepusht: "${bericht}"` });
+  } catch (e) {
+    res.status(500).json({ ok: false, fout: (e.stderr || e.stdout || e.message).toString().trim() });
+  }
+});
 app.get("/reset", (req, res) => res.sendFile("reset.html", { root: publiek }));
+app.get("/push", (req, res) => res.sendFile("push.html", { root: publiek }));
 app.use(express.static(publiek));
 
 /* ---------- Start ---------- */

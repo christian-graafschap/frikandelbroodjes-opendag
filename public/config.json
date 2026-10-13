@@ -1,11 +1,34 @@
 {
-  "titel": { "tekst": "Frikandelbroodjesweek!", "kleur": "#ffffff" },
-  "badge": { "tekst": "-25%", "achtergrond": "#c2410c" },
-  "productnaam": { "tekst": "Frikandelbroodje" },
-  "beschrijving": { "tekst": "Krokant bladerdeeg met een sappige frikandel en een vleugje curry. Vers uit onze oven, lekker als lunch of tussendoor." },
-  "prijs": { "tekst": "€ 1,99" },
-  "bestelknop": { "tekst": "In winkelmand", "kleur": "#ffffff", "achtergrond": "#15803d" },
-  "foto": { "bestand": "broodje.webp", "alt": "Vers frikandelbroodje met krokant bladerdeeg" },
-  "cookiebanner": { "positie": "onder" },
-  "pagina": { "achtergrond": "#fff7e0" }
+  "titel": {
+    "tekst": "Frikandelbroodjesweek!",
+    "kleur": "#ffffff"
+  },
+  "badge": {
+    "tekst": "-25%",
+    "achtergrond": "#c2410c"
+  },
+  "productnaam": {
+    "tekst": "Frikandelbroodje"
+  },
+  "beschrijving": {
+    "tekst": "Krokant bladerdeeg met een sappige frikandel en een vleugje curry. Vers uit onze oven, lekker als lunch of tussendoor."
+  },
+  "prijs": {
+    "tekst": "€ 1,99"
+  },
+  "bestelknop": {
+    "tekst": "In winkelmand",
+    "kleur": "#ffffff",
+    "achtergrond": "#15803d"
+  },
+  "foto": {
+    "bestand": "broodje.webp",
+    "alt": "Vers frikandelbroodje met krokant bladerdeeg"
+  },
+  "cookiebanner": {
+    "positie": "onder"
+  },
+  "pagina": {
+    "achtergrond": "#fff7e0"
+  }
 }
