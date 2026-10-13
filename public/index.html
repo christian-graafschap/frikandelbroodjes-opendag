@@ -197,7 +197,6 @@ async function opslaan(){
   try{
     const r = await fetch("api/config", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(config) });
     if(!r.ok) throw new Error((await r.json().catch(()=>({}))).fout || r.status);
-    toast("Opgeslagen en naar GitHub gestuurd");
   }catch(e){
     toast("Opslaan mislukt: " + e.message);
   }
@@ -379,13 +378,29 @@ shop.addEventListener("contextmenu",e=>{
   openEditor(doel ? doel.dataset.edit : "pagina", e.clientX, e.clientY);
 });
 
-// Bewerkmodus voor tablets: tikken opent het bewerkvenster
+// Bewerkmodus: aan = tikken opent het bewerkvenster. Uit = wijzigingen committen en pushen.
 let bewerkmodus = false;
-$("potlood").onclick = function(){
+$("potlood").onclick = async function(){
   bewerkmodus = !bewerkmodus;
   this.setAttribute("aria-pressed", bewerkmodus);
   this.textContent = bewerkmodus ? "✓ Klaar met bewerken" : "✏️ Bewerken";
   document.body.classList.toggle("bewerkmodus", bewerkmodus);
+  if(bewerkmodus) return;
+  await opslaan();                       // pending wijziging eerst naar de server
+  this.disabled = true;
+  const herstel = this.textContent;
+  this.textContent = "⏳ Pushen…";
+  try{
+    const r = await fetch("/api/push", { method:"POST", headers:{"Content-Type":"application/json"}, body: "{}" });
+    const d = await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(d.fout || r.status);
+    toast(d.bericht || "Gecommit en gepusht");
+  }catch(e){
+    toast("Push mislukt: " + e.message);
+  }finally{
+    this.disabled = false;
+    this.textContent = herstel;
+  }
 };
 shop.addEventListener("click",e=>{
   if(bewerkmodus){

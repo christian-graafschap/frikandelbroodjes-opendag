@@ -4,7 +4,7 @@
     "kleur": "#ffffff"
   },
   "badge": {
-    "tekst": "-25%",
+    "tekst": "-26%",
     "achtergrond": "#c2410c"
   },
   "productnaam": {
@@ -17,7 +17,7 @@
     "tekst": "€ 1,99"
   },
   "bestelknop": {
-    "tekst": "In winkelmand",
+    "tekst": "Kopen!",
     "kleur": "#ffffff",
     "achtergrond": "#15803d"
   },
@@ -29,6 +29,6 @@
     "positie": "onder"
   },
   "pagina": {
-    "achtergrond": "#fff7e0"
+    "achtergrond": "#e0e4ff"
   }
 }

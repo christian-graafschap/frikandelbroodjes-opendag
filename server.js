@@ -176,7 +176,6 @@ app.post("/api/push", async (req, res) => {
   }
 });
 app.get("/reset", (req, res) => res.sendFile("reset.html", { root: publiek }));
-app.get("/push", (req, res) => res.sendFile("push.html", { root: publiek }));
 app.use(express.static(publiek));
 
 /* ---------- Start ---------- */
