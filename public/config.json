@@ -1,14 +1,14 @@
 {
   "titel": {
-    "tekst": "Frikandelbroodjesweek!",
+    "tekst": "Frikandelbroodjesmaand!",
     "kleur": "#ffffff"
   },
   "badge": {
-    "tekst": "-25%",
-    "achtergrond": "#c2410c"
+    "tekst": "-9%",
+    "achtergrond": "#7e726d"
   },
   "productnaam": {
-    "tekst": "Frikandelbroodje"
+    "tekst": "Frikandelbroodjes"
   },
   "beschrijving": {
     "tekst": "Krokant bladerdeeg met een sappige frikandel en een vleugje curry. Vers uit onze oven, lekker als lunch of tussendoor."
