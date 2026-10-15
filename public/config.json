@@ -1,11 +1,11 @@
 {
   "titel": {
-    "tekst": "Frikandelbroodjesmaand!",
+    "tekst": "Frikandelbroodjesweek!",
     "kleur": "#ffffff"
   },
   "badge": {
-    "tekst": "-9%",
-    "achtergrond": "#7e726d"
+    "tekst": "-15%",
+    "achtergrond": "#4c00ff"
   },
   "productnaam": {
     "tekst": "Frikandelbroodjes"
@@ -14,12 +14,12 @@
     "tekst": "Krokant bladerdeeg met een sappige frikandel en een vleugje curry. Vers uit onze oven, lekker als lunch of tussendoor."
   },
   "prijs": {
-    "tekst": "€ 1,99"
+    "tekst": "€ 1,09"
   },
   "bestelknop": {
-    "tekst": "Kopen!",
+    "tekst": "In winkelmand",
     "kleur": "#ffffff",
-    "achtergrond": "#15803d"
+    "achtergrond": "#7f1515"
   },
   "foto": {
     "bestand": "broodje.webp",
@@ -29,6 +29,6 @@
     "positie": "onder"
   },
   "pagina": {
-    "achtergrond": "#e0e4ff"
+    "achtergrond": "#fff7e0"
   }
 }

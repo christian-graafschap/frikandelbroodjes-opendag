@@ -8,22 +8,26 @@ automatisch tests uitvoert en een rapport publiceert.
 
 - Node.js 20.6 of nieuwer
 - Een GitHub-repo voor de demo
-- Git (lokaal geconfigureerd en met pushrechten op de repo)
-- Voor de **GitHub-API-modus** (optioneel): een fine-grained personal access token met alleen
-  **Contents: Read and write** op die ene repo (GitHub → Settings → Developer settings → Fine-grained tokens)
+- Git (lokaal geconfigureerd en met pushrechten op de repo — bijvoorbeeld via de Windows
+  Credential Manager of een SSH-sleutel)
 
 ## Eenmalig instellen
 
 1. Clone of zet deze map in de repo en push hem één keer gewoon met git.
 2. Zet de logo's in `public/logos/` als `graafschap-college.svg` en `ah.svg` (png, webp of jpg mag ook).
    Wordt de repo publiek, gebruik dan liever een eigen knipoog-logo voor de supermarkt dan het echte logo.
-3. Kopieer `.env.example` naar `.env`. Kies een van de twee modi:
-   - **Lokale modus (standaard aanbevolen):** zet `LOCAL_ONLY=true`. Je hebt dan geen token nodig.
-     Wijzigingen worden pas gepusht als je op **"✓ Klaar met bewerken"** drukt; dat gebeurt via
-     lokale `git commit && git push`.
-   - **GitHub-API-modus:** laat `LOCAL_ONLY` leeg en vul `GITHUB_TOKEN`, `GITHUB_OWNER` en `GITHUB_REPO` in.
-     Elke wijziging wordt dan direct door de server via de GitHub API gecommit en gepusht.
+3. Kopieer `.env.example` naar `.env`. Kies een van de twee modi (schakelbaar via
+   http://localhost:3000/config):
+   - **Online modus** (`LOCAL_ONLY=false`): wijzigingen worden in `public/config.json`
+     opgeslagen en bij **"✓ Klaar met bewerken"** doet de server lokaal
+     `git add && git commit && git push`. Er is geen GitHub-token nodig; `git push`
+     gebruikt je bestaande credentials. Daarna draait de Actions-pipeline op GitHub.
+   - **Offline modus** (`LOCAL_ONLY=true`): wijzigingen worden ook in `public/config.json`
+     opgeslagen, maar bij **"✓ Klaar met bewerken"** draait de Playwright-testsuite lokaal
+     tegen de draaiende server. Er wordt niets naar GitHub gestuurd.
 4. `npm install`
+5. Voor offline modus: `npx playwright install chromium` om de browser voor de lokale
+   testruns binnen te halen.
 
 ## Draaien op de open dag
 
@@ -36,9 +40,10 @@ in hetzelfde netwerk).
 
 - Klik op **✏️ Bewerken** om onderdelen aanpasbaar te maken. Klik of rechtsklik dan op een onderdeel
   om het bewerkvenster te openen.
-- Klik op **✓ Klaar met bewerken** om de huidige staat op te slaan en te pushen.
-  In LOCAL_ONLY-modus wordt `public/config.json` geschreven en lokaal gecommit en gepusht;
-  in GitHub-API-modus is de push al tijdens het bewerken gedaan.
+- Klik op **✓ Klaar met bewerken** om de huidige staat af te sluiten.
+  In online modus wordt de wijziging lokaal gecommit en met `git push` naar GitHub gezet,
+  waarna de Actions-pipeline de tests draait. In offline modus draait de Playwright-testsuite
+  lokaal tegen de draaiende server en wordt er niets naar GitHub gestuurd.
 - **Reset**: ga naar http://localhost:3000/reset en klik op "Ja, reset nu". De sneltoets
   `Shift + Alt + R` op de pagina werkt ook.
 - **Status van de laatste push**: http://localhost:3000/api/status
@@ -50,11 +55,15 @@ in hetzelfde netwerk).
 - De server controleert alleen vorm en lengte (kleuren als `#rrggbb`, tekst tot 120 tekens,
   vaste keuzes voor foto en cookiebanner). Inhoudelijk "foute" waarden mogen juist, daar
   moeten de tests op falen.
-- **LOCAL_ONLY-modus:** `POST /api/push` schrijft de in-memory config naar `public/config.json`
-  en doet lokaal `git add -A && git commit && git push`. De knop "✓ Klaar met bewerken" roept
-  dit endpoint aan.
-- **GitHub-API-modus:** de server schrijft `public/config.json` direct in de repo via de
-  GitHub API. Er is dan geen lokale git nodig en de token blijft op de server.
+- Elke `POST /api/config` schrijft meteen `public/config.json`, in beide modi. De wijziging
+  overleeft dus een herstart van de server.
+- **Online modus:** op `POST /api/push` (de knop "✓ Klaar met bewerken") doet de server
+  `git add -A && git commit && git push`. Er is géén GitHub-token in het spel; `git push`
+  gebruikt je bestaande git-credentials.
+- **Offline modus:** op `POST /api/push` draait de server lokaal `npx playwright test`
+  tegen de eigen draaiende instance en geeft de uitslag terug. Er wordt géén git-commando
+  uitgevoerd en er gaat niets naar GitHub.
+- De modus is tijdens de demo om te schakelen via http://localhost:3000/config.
 - Omdat de config in `public/` staat, test de pipeline straks tegen de echte gepushte waarden.
 
 De pagina werkt ook als je `public/index.html` los opent, maar dan wordt er niets opgeslagen.

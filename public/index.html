@@ -389,14 +389,16 @@ $("potlood").onclick = async function(){
   await opslaan();                       // pending wijziging eerst naar de server
   this.disabled = true;
   const herstel = this.textContent;
-  this.textContent = "⏳ Pushen…";
+  this.textContent = "⏳ Verwerken…";
   try{
     const r = await fetch("/api/push", { method:"POST", headers:{"Content-Type":"application/json"}, body: "{}" });
     const d = await r.json().catch(()=>({}));
-    if(!r.ok) throw new Error(d.fout || r.status);
-    toast(d.bericht || "Gecommit en gepusht");
+    if(!r.ok && !d.bericht) throw new Error(d.fout || r.status);
+    toast(d.bericht || "Klaar");
+    if(d.output) console.log(d.output);  // volledige Playwright-output in LOCAL_ONLY-modus
+    if(d.rapportUrl) window.open(d.rapportUrl, "_blank", "noopener");
   }catch(e){
-    toast("Push mislukt: " + e.message);
+    toast("Mislukt: " + e.message);
   }finally{
     this.disabled = false;
     this.textContent = herstel;

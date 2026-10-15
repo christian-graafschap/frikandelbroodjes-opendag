@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Config</title>
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:#fff7e0;color:#2b2b2b;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.kaart{background:#fff;border-radius:16px;padding:28px;max-width:480px;width:calc(100% - 32px);box-shadow:0 10px 30px rgba(0,0,0,.08)}
+h1{margin:0 0 8px;font-size:1.4rem}
+p.intro{margin:0 0 16px;color:#4a4a4a}
+.rij{display:flex;align-items:flex-start;gap:12px;margin:0 0 12px;padding:14px;border-radius:12px;background:#f7f3e2;cursor:pointer}
+.rij input{margin-top:4px;transform:scale(1.2)}
+.rij .tekst{flex:1}
+.rij b{display:block;color:#2b2b2b;margin-bottom:4px}
+.rij p{margin:0;color:#4a4a4a;font-size:.92rem}
+code{background:#eef2f6;padding:1px 5px;border-radius:4px;font-size:.9em}
+.hint{color:#6b6457;font-size:.9rem;margin:0 0 16px}
+button{border:0;border-radius:10px;padding:12px 18px;font-weight:700;font-size:16px;cursor:pointer;margin:4px}
+.primair{background:#15803d;color:#fff}
+.primair:hover{background:#166534}
+.primair:disabled{background:#9ca3af;cursor:not-allowed}
+.sec{background:#eef2f6;color:#1b2430}
+.status{margin-top:16px;min-height:1.4em;font-size:.95rem}
+.status.ok{color:#15803d}
+.status.fout{color:#b91c1c}
+</style>
+</head>
+<body>
+<div class="kaart">
+  <h1>Config</h1>
+  <p class="intro">Kies hoe de demo omgaat met wijzigingen van bezoekers.</p>
+
+  <label class="rij" for="offline">
+    <input type="checkbox" id="offline">
+    <span class="tekst">
+      <b>Offline modus</b>
+      <p>Wijzigingen worden opgeslagen in <code>public/config.json</code> op deze laptop. Bij <b>"✓ Klaar met bewerken"</b> draait de Playwright-testsuite lokaal. Er wordt niets naar GitHub gestuurd.</p>
+      <p>In online modus wordt bij <b>"✓ Klaar met bewerken"</b> gecommit en gepusht met de lokale <code>git</code> (geen token nodig).</p>
+    </span>
+  </label>
+
+  <button type="button" class="primair" id="opslaan">Opslaan</button>
+  <button type="button" class="sec" onclick="location.href='/'">Terug naar de pagina</button>
+  <div class="status" id="status" role="status"></div>
+</div>
+<script>
+const vink = document.getElementById("offline");
+const knop = document.getElementById("opslaan");
+const st = document.getElementById("status");
+
+async function laad() {
+  try {
+    const r = await fetch("/api/modus");
+    const d = await r.json();
+    vink.checked = d.lokaal;
+  } catch (e) {
+    st.className = "status fout"; st.textContent = "Kon huidige modus niet laden: " + e.message;
+  }
+}
+
+knop.addEventListener("click", async () => {
+  st.className = "status"; st.textContent = "Bezig…";
+  knop.disabled = true;
+  try {
+    const r = await fetch("/api/modus", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lokaal: vink.checked })
+    });
+    const d = await r.json();
+    if (!r.ok || !d.ok) throw new Error(d.fout || r.status);
+    st.className = "status ok"; st.textContent = d.lokaal ? "Offline modus is nu actief." : "Online modus is nu actief.";
+  } catch (e) {
+    st.className = "status fout"; st.textContent = "Opslaan mislukt: " + e.message;
+  } finally {
+    knop.disabled = false;
+  }
+});
+
+laad();
+</script>
+</body>
+</html>
