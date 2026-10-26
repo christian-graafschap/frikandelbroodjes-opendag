@@ -73,12 +73,13 @@ in hetzelfde netwerk).
 - Klik op **✓ Klaar met bewerken** om de huidige staat af te sluiten.
   In online modus wordt de wijziging lokaal gecommit en met `git push` naar GitHub gezet,
   waarna de Actions-pipeline de tests draait. In offline modus draait de Playwright-testsuite
-  lokaal tegen de draaiende server en wordt er niets naar GitHub gestuurd.
-- **Reset**: zie [De reset-pagina](#de-reset-pagina-reset).
-- **Modus wisselen**: zie [De config-pagina](#de-config-pagina-config).
+  lokaal tegen de draaiende server en wordt er niets naar GitHub gestuurd. De uitslag opent dan
+  in een nieuw tabblad in het [eigen testrapport](#eigen-testrapport-rapport-eigen).
+- **Reset**: zie [Reset-pagina](#reset-pagina-reset).
+- **Modus wisselen**: zie [Config-pagina](#config-pagina-config).
 - **Status van de laatste push**: http://localhost:3000/api/status
 
-### De config-pagina (`/config`)
+## Config-pagina (`/config`)
 
 Op http://localhost:3000/config wissel je tijdens de demo tussen de online en de offline modus,
 zonder `.env` aan te passen of de server te herstarten.
@@ -91,7 +92,7 @@ zonder `.env` aan te passen of de server te herstarten.
 De keuze bewaart de server alleen in het geheugen. Na een herstart geldt weer de waarde van
 `LOCAL_ONLY` in `.env`. Wil je een modus vast instellen, pas dan `.env` aan.
 
-### De reset-pagina (`/reset`)
+## Reset-pagina (`/reset`)
 
 Op http://localhost:3000/reset zet je de actiepagina terug naar de standaardinstellingen, bijvoorbeeld
 tussen twee groepjes bezoekers door. Klik op **Ja, reset nu**; er komt geen extra bevestiging.
@@ -104,6 +105,31 @@ tussen twee groepjes bezoekers door. Klik op **Ja, reset nu**; er komt geen extr
 
 Op de actiepagina zelf werkt de verborgen sneltoets `Shift + Alt + R` ook. Die vraagt eerst om
 bevestiging en doet daarna hetzelfde als de knop op `/reset`.
+
+## Eigen testrapport (`/rapport-eigen`)
+
+In de offline modus gebruikt de demo een eigen (custom) Playwright-rapport in plaats van alleen het
+standaard HTML-rapport van Playwright. Dat standaardrapport is bedoeld voor ontwikkelaars; het eigen
+rapport is in de stijl van de actiepagina gemaakt en is ook voor bezoekers goed te volgen.
+
+- Na "✓ Klaar met bewerken" opent http://localhost:3000/rapport-eigen automatisch in een nieuw tabblad.
+- Bovenaan staat hoeveel tests er geslaagd en gefaald zijn, en hoe lang de testrun duurde.
+- Per test zie je of hij geslaagd is. Bij een gefaalde test staan de **verwachte** en de
+  **werkelijke** waarde naast elkaar, zodat meteen duidelijk is wat een bezoeker "fout" heeft ingesteld.
+- Onderaan staat een link naar het volledige standaardrapport van Playwright op `/rapport/`, met
+  screenshots en traces van gefaalde tests.
+
+Hoe het werkt:
+
+- `playwright.config.js` heeft naast de `html`- en `list`-reporter ook een `json`-reporter, die de
+  uitslag opslaat in `playwright-report/resultaat.json`.
+- `server.js` leest dat bestand uit en geeft per test de titel, status, duur, verwachte en werkelijke
+  waarde terug via `GET /api/rapport-data`.
+- `public/rapport.html` haalt die gegevens op en toont ze.
+
+Bestaat `resultaat.json` niet, bijvoorbeeld omdat er nog geen testrun is geweest, dan valt de demo
+terug op het standaardrapport op `/rapport/`. In de online modus wordt het eigen rapport niet
+gebruikt: daar draaien de tests in GitHub Actions en staat het standaardrapport als artifact op GitHub.
 
 ## Hoe het werkt
 
