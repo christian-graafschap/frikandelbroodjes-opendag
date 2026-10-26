@@ -2,6 +2,10 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests",
+  // Alle tests tegelijk draaien; anders lopen de tests uit één bestand na elkaar in één worker.
+  fullyParallel: true,
+  // De pagina draait lokaal: 2 s is ruim genoeg. Met de standaard van 5 s wacht elke falende test onnodig lang.
+  expect: { timeout: 2_000 },
   reporter: [
     ["html", { outputFolder: "playwright-report", open: "never" }],
     ["json", { outputFile: "playwright-report/resultaat.json" }],
@@ -10,7 +14,7 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost:3000",
     screenshot: "only-on-failure",
-    trace: "retain-on-failure"
+    trace: "off"
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } }
