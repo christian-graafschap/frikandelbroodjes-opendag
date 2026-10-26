@@ -74,9 +74,36 @@ in hetzelfde netwerk).
   In online modus wordt de wijziging lokaal gecommit en met `git push` naar GitHub gezet,
   waarna de Actions-pipeline de tests draait. In offline modus draait de Playwright-testsuite
   lokaal tegen de draaiende server en wordt er niets naar GitHub gestuurd.
-- **Reset**: ga naar http://localhost:3000/reset en klik op "Ja, reset nu". De sneltoets
-  `Shift + Alt + R` op de pagina werkt ook.
+- **Reset**: zie [De reset-pagina](#de-reset-pagina-reset).
+- **Modus wisselen**: zie [De config-pagina](#de-config-pagina-config).
 - **Status van de laatste push**: http://localhost:3000/api/status
+
+### De config-pagina (`/config`)
+
+Op http://localhost:3000/config wissel je tijdens de demo tussen de online en de offline modus,
+zonder `.env` aan te passen of de server te herstarten.
+
+- Vink **Offline modus** aan als "✓ Klaar met bewerken" de Playwright-tests lokaal moet draaien.
+  Er gaat dan niets naar GitHub.
+- Laat het vinkje uit voor de online modus: dan wordt er gecommit en gepusht met de lokale `git`.
+- Klik op **Opslaan**. Onderaan verschijnt welke modus nu actief is.
+
+De keuze bewaart de server alleen in het geheugen. Na een herstart geldt weer de waarde van
+`LOCAL_ONLY` in `.env`. Wil je een modus vast instellen, pas dan `.env` aan.
+
+### De reset-pagina (`/reset`)
+
+Op http://localhost:3000/reset zet je de actiepagina terug naar de standaardinstellingen, bijvoorbeeld
+tussen twee groepjes bezoekers door. Klik op **Ja, reset nu**; er komt geen extra bevestiging.
+
+- De server overschrijft `public/config.json` met de inhoud van `standaard-config.json`. Alle
+  wijzigingen van bezoekers zijn dan weg.
+- Er wordt bij een reset niets gecommit of gepusht. De teruggezette versie gaat pas naar GitHub
+  bij de volgende "✓ Klaar met bewerken" in de online modus.
+- Wil je de standaardinstellingen zelf veranderen, pas dan `standaard-config.json` aan.
+
+Op de actiepagina zelf werkt de verborgen sneltoets `Shift + Alt + R` ook. Die vraagt eerst om
+bevestiging en doet daarna hetzelfde als de knop op `/reset`.
 
 ## Hoe het werkt
 
