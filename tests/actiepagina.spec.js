@@ -8,8 +8,8 @@ const VERWACHT = {
   beschrijving:
     "Krokant bladerdeeg met een sappige frikandel en een vleugje curry. Vers uit onze oven, lekker als lunch of tussendoor.",
   prijs: "€ 1,99",
-  achtergrondHex: "#0082C9",
-  achtergrondRgb: "rgb(0, 130, 201)"
+  achtergrondHex: "#fff7e0",
+  achtergrondRgb: "rgb(255, 247, 224)"
 };
 
 test.beforeEach(async ({ page }) => {
@@ -21,10 +21,7 @@ test("titel is 'Frikandelbroodjesweek!'", async ({ page }) => {
 });
 
 test("titelkleur is wit", async ({ page }) => {
-  const kleur = await page
-    .getByTestId("titel")
-    .evaluate(el => getComputedStyle(el).color);
-  expect(kleur).toBe(VERWACHT.titelKleur);
+  await expect(page.getByTestId("titel")).toHaveCSS("color", VERWACHT.titelKleur);
 });
 
 test("kortingsbadge toont -25%", async ({ page }) => {
@@ -43,9 +40,6 @@ test("prijs is € 1,99", async ({ page }) => {
   await expect(page.getByTestId("prijs")).toHaveText(VERWACHT.prijs);
 });
 
-test(`achtergrondkleur is AH blauw (${VERWACHT.achtergrondHex})`, async ({ page }) => {
-  const kleur = await page.evaluate(
-    () => getComputedStyle(document.body).backgroundColor
-  );
-  expect(kleur).toBe(VERWACHT.achtergrondRgb);
+test(`achtergrondkleur is lichtgeel (${VERWACHT.achtergrondHex})`, async ({ page }) => {
+  await expect(page.locator("body")).toHaveCSS("background-color", VERWACHT.achtergrondRgb);
 });

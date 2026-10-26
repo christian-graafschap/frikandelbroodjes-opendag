@@ -48,10 +48,13 @@ Playwright schrijft de uitslag via een extra `json`-reporter naar `playwright-re
 
 ## De tests
 
-`tests/actiepagina.spec.js` controleert onder andere of de prijs tussen €0,01 en €10 ligt, of de
-kortingsbadge een percentage tussen 1 en 99 toont en of de bestelknop WCAG AA-contrast heeft.
-Een bezoeker die "€ 150" of een gele knop op wit instelt, laat de tests falen — en dat is precies de
-bedoeling. De server controleert daarom alleen vorm en lengte van de invoer, niet de inhoud.
+`tests/actiepagina.spec.js` controleert zeven onderdelen: titel, titelkleur, kortingsbadge,
+productnaam, omschrijving, prijs en de achtergrondkleur van de pagina. De verwachte waarden staan
+in `VERWACHT` bovenaan het testbestand.
+
+De standaardversie van de pagina (`standaard-config.json`) bevat bewust fouten, zodat vijf van de
+zeven tests falen. De opdracht voor bezoekers is de pagina zo aan te passen dat alle tests slagen.
+Een reset zet de pagina terug naar deze foutieve versie.
 
 ## Online modus
 
