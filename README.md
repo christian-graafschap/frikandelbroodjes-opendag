@@ -6,10 +6,13 @@ automatisch tests uitvoert en een rapport publiceert.
 
 ## Wat heb je nodig
 
-- Node.js 20.6 of nieuwer
+- **Node.js 20.6 of nieuwer** (https://nodejs.org, de LTS-versie). Dit is een harde eis:
+  `npm start` gebruikt `node --env-file=.env`, en die optie bestaat pas vanaf Node.js 20.6.
+  Met een oudere versie start de server niet. Controleer de versie met `node -v`.
 - Een GitHub-repo voor de demo
 - Git (lokaal geconfigureerd en met pushrechten op de repo — bijvoorbeeld via de Windows
-  Credential Manager of een SSH-sleutel)
+  Credential Manager of een SSH-sleutel). Voor de online modus moeten ook `git config user.name`
+  en `git config user.email` ingesteld zijn, anders mislukt de commit die de server maakt.
 
 ## Eenmalig instellen
 
@@ -28,6 +31,33 @@ automatisch tests uitvoert en een rapport publiceert.
 4. `npm install`
 5. Voor offline modus: `npx playwright install chromium` om de browser voor de lokale
    testruns binnen te halen.
+
+## Installeren op een andere laptop
+
+Een apart install-script is niet nodig. Zorg eerst dat Node.js (20.6+) en Git geïnstalleerd zijn
+(zie "Wat heb je nodig"), en voer dan uit:
+
+```
+git clone https://github.com/christian-graafschap/frikandelbroodjes-opendag.git
+cd frikandelbroodjes-opendag
+npm ci
+npx playwright install chromium
+copy .env.example .env
+```
+
+Staat de map er al, dan is `git pull` genoeg in plaats van `git clone`. Draai daarna wel opnieuw
+`npm ci` als `package-lock.json` veranderd is.
+
+- `npm ci` installeert precies de versies uit `package-lock.json` in `node_modules/`.
+- `npx playwright install chromium` haalt de browser voor de lokale testruns (offline modus) op.
+  Die komt in je gebruikersprofiel terecht, niet in de projectmap, en moet dus per laptop één keer.
+- Zet in `.env` de modus met `LOCAL_ONLY=true` (offline) of `LOCAL_ONLY=false` (online).
+
+Starten gaat met een dubbelklik op `start.bat`, of met `npm start` en daarna http://localhost:3000.
+
+Waarom dit niet vanzelf meekomt met een pull: `node_modules/` en `.env` staan in `.gitignore` en
+zitten dus niet in de repo. Commit en push wijzigingen op de oude laptop eerst, anders krijg je
+op de nieuwe laptop een oudere versie binnen.
 
 ## Draaien op de open dag
 
