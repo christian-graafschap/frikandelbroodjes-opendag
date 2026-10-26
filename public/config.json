@@ -5,7 +5,7 @@
   },
   "badge": {
     "tekst": "-15%",
-    "achtergrond": "#4c00ff"
+    "achtergrond": "#ff0000"
   },
   "productnaam": {
     "tekst": "Frikandelbroodjes"
@@ -14,7 +14,7 @@
     "tekst": "Krokant bladerdeeg met een sappige frikandel en een vleugje curry. Vers uit onze oven, lekker als lunch of tussendoor."
   },
   "prijs": {
-    "tekst": "€ 1,09"
+    "tekst": "€ 0,25"
   },
   "bestelknop": {
     "tekst": "In winkelmand",
@@ -26,9 +26,9 @@
     "alt": "Vers frikandelbroodje met krokant bladerdeeg"
   },
   "cookiebanner": {
-    "positie": "onder"
+    "positie": "boven"
   },
   "pagina": {
-    "achtergrond": "#fff7e0"
+    "achtergrond": "#fa00c4"
   }
 }

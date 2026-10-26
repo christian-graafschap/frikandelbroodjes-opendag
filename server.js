@@ -19,6 +19,7 @@ const configOpSchijf = fileURLToPath(new URL("./public/config.json", import.meta
 const playwrightCli = fileURLToPath(new URL("./node_modules/@playwright/test/cli.js", import.meta.url));
 const rapportMap = fileURLToPath(new URL("./playwright-report", import.meta.url));
 const rapportIndex = fileURLToPath(new URL("./playwright-report/index.html", import.meta.url));
+const rapportJson = fileURLToPath(new URL("./playwright-report/resultaat.json", import.meta.url));
 
 const STANDAARD = JSON.parse(readFileSync(new URL("./standaard-config.json", import.meta.url), "utf8"));
 
@@ -99,13 +100,37 @@ async function git(...args) {
 }
 function draaiPlaywright() {
   return new Promise(resolve => {
-    const kind = spawn(process.execPath, [playwrightCli, "test", "--reporter=line"], { cwd: projectmap });
+    const kind = spawn(process.execPath, [playwrightCli, "test"], { cwd: projectmap });
     let uit = "", fout = "";
     kind.stdout.on("data", d => uit += d.toString());
     kind.stderr.on("data", d => fout += d.toString());
     kind.on("error", e => resolve({ code: -1, uit, fout: fout + e.message }));
     kind.on("close", code => resolve({ code: code ?? -1, uit, fout }));
   });
+}
+function stripAnsi(s) { return s.replace(/\x1b\[[0-9;]*m/g, ""); }
+function verzamelTests(suites, uit = []) {
+  for (const suite of suites || []) {
+    for (const spec of suite.specs || []) {
+      for (const t of spec.tests || []) {
+        const res = t.results?.[0] || {};
+        const foutRuw = res.errors?.[0]?.message || res.error?.message || "";
+        const fout = foutRuw ? stripAnsi(foutRuw) : "";
+        const vMatch = fout.match(/Expected(?:\s+string)?:\s*(.+)/);
+        const rMatch = fout.match(/Received(?:\s+string)?:\s*(.+)/);
+        uit.push({
+          titel: spec.title,
+          status: res.status || "unknown",
+          duurMs: Math.round(res.duration || 0),
+          verwacht: vMatch ? vMatch[1].trim().replace(/^"|"$/g, "") : null,
+          werkelijk: rMatch ? rMatch[1].trim().replace(/^"|"$/g, "") : null,
+          fout
+        });
+      }
+    }
+    if (suite.suites) verzamelTests(suite.suites, uit);
+  }
+  return uit;
 }
 function vatPlaywrightSamen(uit, code) {
   const g = (uit.match(/(\d+)\s+passed/) || [])[1];
@@ -124,7 +149,7 @@ app.post("/api/push", async (req, res) => {
     if (uit) console.log(uit.trim());
     if (fout) console.error(fout.trim());
     const output = (uit + (fout ? "\n" + fout : "")).trim();
-    const rapportUrl = existsSync(rapportIndex) ? "/rapport/" : null;
+    const rapportUrl = existsSync(rapportJson) ? "/rapport-eigen" : (existsSync(rapportIndex) ? "/rapport/" : null);
     const ok = code === 0;
     return res.json({ ok, bericht: `Lokaal getest — ${samenvatting}`, output, rapportUrl });
   }
@@ -146,7 +171,21 @@ app.post("/api/push", async (req, res) => {
 });
 app.get("/reset", (req, res) => res.sendFile("reset.html", { root: publiek }));
 app.get("/config", (req, res) => res.sendFile("config.html", { root: publiek }));
-app.use("/rapport", express.static(rapportMap));
+app.get("/rapport-eigen", (req, res) => res.sendFile("rapport.html", { root: publiek }));
+app.get("/api/rapport-data", (req, res) => {
+  res.set("Cache-Control", "no-store");
+  try {
+    const data = JSON.parse(readFileSync(rapportJson, "utf8"));
+    res.json({
+      tijd: data.stats?.startTime || null,
+      duurMs: data.stats?.duration || 0,
+      tests: verzamelTests(data.suites)
+    });
+  } catch {
+    res.status(404).json({ fout: "Geen testrapport gevonden" });
+  }
+});
+app.use("/rapport", express.static(rapportMap, { etag: false, lastModified: false, setHeaders: res => res.set("Cache-Control", "no-store") }));
 app.use(express.static(publiek));
 
 /* ---------- Start ---------- */

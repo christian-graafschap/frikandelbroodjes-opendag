@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Testresultaten — Frikandelbroodjesweek</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:#fff7e0;color:#2b2b2b;font-family:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+
+.shop-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 20px;background:#fff;border-bottom:1px solid #e7e2d4}
+.logo-plek{border:2px dashed #b9b2a0;border-radius:8px;padding:8px 12px;font-size:.8rem;color:#6b6457;text-align:center;min-width:120px}
+.logo-plek img{display:block;max-height:48px;max-width:170px;height:auto}
+.logo-plek.heeft-logo{border:0;padding:0;min-width:0}
+.opdracht{font-size:.82rem;color:#6b6457;text-align:center}
+
+.banner{background:#14325c;padding:34px 24px 30px;position:relative;color:#fff}
+.banner::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-12deg,transparent 0 22px,rgba(255,255,255,.04) 22px 44px);pointer-events:none}
+.banner-binnen{max-width:980px;margin:0 auto;position:relative;z-index:1}
+.banner-week{color:#ffd166;font-weight:700;margin:0 0 4px;font-size:1rem}
+.banner h1{font-family:"Bricolage Grotesque",Figtree,sans-serif;font-weight:800;font-size:clamp(28px,5.4cqi,48px);line-height:1.05;letter-spacing:-.02em;margin:0;max-width:20ch}
+.samenvatting{margin:14px 0 0;font-size:1.05rem}
+.samenvatting .ok{color:#86efac;font-weight:700}
+.samenvatting .mis{color:#fca5a5;font-weight:700}
+
+.lijst{max-width:980px;margin:28px auto 12px;padding:0 24px}
+.test{background:#fff;border-radius:16px;padding:16px 18px;margin:0 0 12px;box-shadow:0 2px 10px rgba(0,0,0,.05);display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start}
+.marker{font-size:1.8rem;line-height:1;font-weight:800}
+.marker.ok{color:#15803d}
+.marker.mis{color:#b91c1c}
+.titel{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:1.15rem;margin:0 0 4px}
+.duur{font-size:.85rem;color:#6b6457;margin:0}
+.diff{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:620px){.diff{grid-template-columns:1fr}}
+.diff-blok{border-radius:10px;padding:10px 12px;font-size:.95rem}
+.diff-blok b{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;color:#4a4a4a;font-weight:700}
+.diff-blok.verwacht{background:#ecfdf5;border:1px solid #a7f3d0}
+.diff-blok.werkelijk{background:#fef2f2;border:1px solid #fecaca}
+.diff-blok code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-word;white-space:pre-wrap}
+.fout-ruw{margin-top:10px;background:#fafafa;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:.82rem;color:#374151;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;overflow-x:auto}
+
+.leeg{text-align:center;color:#6b6457;margin:40px 0}
+.voet{max-width:980px;margin:0 auto 40px;padding:0 24px;color:#6b6457;font-size:.9rem;display:flex;gap:16px;flex-wrap:wrap}
+.voet a{color:#14325c}
+</style>
+</head>
+<body>
+<header class="shop-head">
+  <div class="logo-plek" data-logo="graafschap-college" data-alt="Graafschap College">Logo Graafschap College</div>
+  <div class="opdracht">Stageopdracht<br>Software Developer</div>
+  <div class="logo-plek" data-logo="ah" data-alt="AH">Logo AH</div>
+</header>
+
+<section class="banner">
+  <div class="banner-binnen">
+    <p class="banner-week">Testresultaten</p>
+    <h1>Automatische controles op de actiepagina</h1>
+    <p class="samenvatting" id="samenvatting">Rapport wordt geladen…</p>
+  </div>
+</section>
+
+<main class="lijst" id="lijst">
+  <p class="leeg">Rapport wordt geladen…</p>
+</main>
+
+<footer class="voet">
+  <a href="/">← Terug naar de actiepagina</a>
+  <a href="/rapport/" target="_blank" rel="noopener">Volledig Playwright-rapport openen</a>
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+function laadLogo(el){
+  const naam = el.dataset.logo, ext = ["svg","png","webp","jpg"];
+  let i = 0;
+  const img = new Image();
+  img.alt = el.dataset.alt;
+  img.onload = ()=>{ el.textContent=""; el.appendChild(img); el.classList.add("heeft-logo"); };
+  img.onerror = ()=>{ if(++i < ext.length) img.src = `logos/${naam}.${ext[i]}`; };
+  img.src = `logos/${naam}.${ext[0]}`;
+}
+document.querySelectorAll("[data-logo]").forEach(laadLogo);
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
+const sec = ms => (Math.max(0, ms)/1000).toFixed(2).replace(".",",");
+
+async function laadRapport(){
+  const sam = document.getElementById("samenvatting");
+  const lijst = document.getElementById("lijst");
+  try {
+    const r = await fetch("/api/rapport-data", { cache: "no-store" });
+    if(!r.ok) throw new Error("Geen rapportdata (status " + r.status + ")");
+    const data = await r.json();
+    const tests = data.tests || [];
+    const geslaagd = tests.filter(t => t.status === "passed").length;
+    const gefaald  = tests.length - geslaagd;
+    sam.innerHTML =
+      `<span class="ok">${geslaagd} geslaagd</span> · ` +
+      `<span class="mis">${gefaald} gefaald</span> · ` +
+      `totaal ${tests.length} tests in ${sec(data.duurMs)} s`;
+
+    if(!tests.length){
+      lijst.innerHTML = '<p class="leeg">Geen tests gevonden.</p>';
+      return;
+    }
+    lijst.innerHTML = tests.map(t => {
+      const ok = t.status === "passed";
+      let detail = "";
+      if(!ok){
+        if(t.verwacht !== null && t.werkelijk !== null){
+          detail = `<div class="diff">
+            <div class="diff-blok verwacht"><b>Verwacht</b><code>${esc(t.verwacht)}</code></div>
+            <div class="diff-blok werkelijk"><b>Werkelijk</b><code>${esc(t.werkelijk)}</code></div>
+          </div>`;
+        } else if(t.fout){
+          const kort = t.fout.split("\n").slice(0,6).join("\n");
+          detail = `<pre class="fout-ruw">${esc(kort)}</pre>`;
+        }
+      }
+      return `<article class="test">
+        <div class="marker ${ok?'ok':'mis'}">${ok?'✓':'✗'}</div>
+        <div>
+          <h2 class="titel">${esc(t.titel)}</h2>
+          <p class="duur">${ok?'Geslaagd':'Gefaald'} in ${sec(t.duurMs)} s</p>
+          ${detail}
+        </div>
+      </article>`;
+    }).join("");
+  } catch (e) {
+    sam.textContent = "Kon rapport niet laden.";
+    lijst.innerHTML = `<p class="leeg">${esc(e.message)}</p>`;
+  }
+}
+
+laadRapport();
+})();
+</script>
+</body>
+</html>

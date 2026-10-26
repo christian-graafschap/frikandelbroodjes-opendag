@@ -396,7 +396,7 @@ $("potlood").onclick = async function(){
     if(!r.ok && !d.bericht) throw new Error(d.fout || r.status);
     toast(d.bericht || "Klaar");
     if(d.output) console.log(d.output);  // volledige Playwright-output in LOCAL_ONLY-modus
-    if(d.rapportUrl) window.open(d.rapportUrl, "_blank", "noopener");
+    if(d.rapportUrl) window.open(d.rapportUrl + "?t=" + Date.now(), "_blank", "noopener");
   }catch(e){
     toast("Mislukt: " + e.message);
   }finally{
