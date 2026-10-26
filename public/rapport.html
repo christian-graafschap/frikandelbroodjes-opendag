@@ -68,7 +68,7 @@ body{margin:0;background:#fff7e0;color:#2b2b2b;font-family:Figtree,system-ui,-ap
 
 <footer class="voet">
   <a href="/">← Terug naar de actiepagina</a>
-  <a href="/rapport/" target="_blank" rel="noopener">Volledig Playwright-rapport openen</a>
+  <a href="/rapport/" target="_blank" rel="noopener" id="volledig">Volledig Playwright-rapport openen</a>
 </footer>
 
 <script>
@@ -97,6 +97,8 @@ async function laadRapport(){
     if(!r.ok) throw new Error("Geen rapportdata (status " + r.status + ")");
     const data = await r.json();
     const tests = data.tests || [];
+    // Het standaardrapport heeft geen volledig Playwright-rapport; /rapport/ zou een oude run tonen.
+    document.getElementById("volledig").hidden = !!data.standaard;
     const geslaagd = tests.filter(t => t.status === "passed").length;
     const gefaald  = tests.length - geslaagd;
     sam.innerHTML =

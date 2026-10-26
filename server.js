@@ -22,6 +22,10 @@ const rapportIndex = fileURLToPath(new URL("./playwright-report/index.html", imp
 const rapportJson = fileURLToPath(new URL("./playwright-report/resultaat.json", import.meta.url));
 
 const STANDAARD = JSON.parse(readFileSync(new URL("./standaard-config.json", import.meta.url), "utf8"));
+// Rapport van de tests tegen de standaardversie. Getoond na het opstarten en na een reset,
+// totdat er een echte testrun is geweest.
+const STANDAARD_RAPPORT = JSON.parse(readFileSync(new URL("./standaard-rapport.json", import.meta.url), "utf8"));
+let toonStandaardRapport = true;
 
 /* ---------- Toegestane invoer: alleen deze velden, met deze regels ---------- */
 // Inhoudelijk "foute" waarden (150% korting, gele tekst op wit) mogen juist wél:
@@ -81,6 +85,7 @@ app.post("/api/config", (req, res) => {
 app.post("/api/reset", (req, res) => {
   huidig = structuredClone(STANDAARD);
   schrijfConfig(huidig);
+  toonStandaardRapport = true;
   res.json({ ok: true });
 });
 
@@ -144,6 +149,7 @@ function vatPlaywrightSamen(uit, code) {
 app.post("/api/push", async (req, res) => {
   if (lokaal) {
     const { code, uit, fout } = await draaiPlaywright();
+    toonStandaardRapport = false;
     const samenvatting = vatPlaywrightSamen(uit, code);
     console.log(`Playwright-run klaar (exit ${code}): ${samenvatting}`);
     if (uit) console.log(uit.trim());
@@ -174,6 +180,7 @@ app.get("/config", (req, res) => res.sendFile("config.html", { root: publiek }))
 app.get("/rapport-eigen", (req, res) => res.sendFile("rapport.html", { root: publiek }));
 app.get("/api/rapport-data", (req, res) => {
   res.set("Cache-Control", "no-store");
+  if (toonStandaardRapport) return res.json({ ...STANDAARD_RAPPORT, standaard: true });
   try {
     const data = JSON.parse(readFileSync(rapportJson, "utf8"));
     res.json({

@@ -25,7 +25,9 @@ Staat het project al op de laptop, dan is `git pull` gevolgd door `npm install` 
 
 ## Starten
 
-Dubbelklik op `start.bat`. De server start en http://localhost:3000 opent in de browser.
+Dubbelklik op `start.bat`. De server start en http://localhost:3000 opent in de browser, met in
+een tweede tabblad het [testrapport](#testrapport-rapport-eigen) van de standaardversie.
+Draait er nog een server op poort 3000, dan stopt `start.bat` die eerst.
 Op een tablet in hetzelfde netwerk gebruik je `http://<ip-van-de-laptop>:3000`.
 
 - **✏️ Bewerken**: klik of rechtsklik daarna op een onderdeel om het aan te passen.
@@ -42,6 +44,12 @@ bijvoorbeeld tussen twee groepjes bezoekers door. Op de actiepagina doet `Shift 
 De demo toont een eigen (custom) Playwright-rapport in de stijl van de actiepagina, zodat bezoekers
 het kunnen volgen. Per test zie je of hij geslaagd is, en bij een gefaalde test de verwachte en de
 werkelijke waarde. Onderaan linkt het naar het volledige standaardrapport van Playwright (`/rapport/`).
+
+Na het opstarten en na een reset toont het rapport de uitslag van de standaardversie uit
+`standaard-rapport.json`, zonder dat de tests gedraaid hebben. Na de eerste testrun toont het de
+echte uitslag. Pas je `standaard-config.json` of de tests aan, maak het standaardrapport dan opnieuw:
+reset de pagina, klik op "✏️ Bewerken" en daarna op "✓ Klaar met bewerken", en sla
+http://localhost:3000/api/rapport-data op als `standaard-rapport.json`.
 
 Playwright schrijft de uitslag via een extra `json`-reporter naar `playwright-report/resultaat.json`
 (zie `playwright.config.js`); `public/rapport.html` toont die via `/api/rapport-data`.

@@ -1,0 +1,62 @@
+{
+  "tijd": null,
+  "duurMs": 34617,
+  "tests": [
+    {
+      "titel": "titel is 'Frikandelbroodjesweek!'",
+      "status": "failed",
+      "duurMs": 5408,
+      "verwacht": "Frikandelbroodjesweek!",
+      "werkelijk": "Frikandelbroodjesmaand!",
+      "fout": "Error: expect(locator).toHaveText(expected) failed"
+    },
+    {
+      "titel": "titelkleur is wit",
+      "status": "passed",
+      "duurMs": 423,
+      "verwacht": null,
+      "werkelijk": null,
+      "fout": ""
+    },
+    {
+      "titel": "kortingsbadge toont -25%",
+      "status": "failed",
+      "duurMs": 5305,
+      "verwacht": "-25%",
+      "werkelijk": "-10%",
+      "fout": "Error: expect(locator).toHaveText(expected) failed"
+    },
+    {
+      "titel": "productnaam is 'Frikandelbroodje'",
+      "status": "failed",
+      "duurMs": 5410,
+      "verwacht": "Frikandelbroodje",
+      "werkelijk": "Frikandelbroodjes",
+      "fout": "Error: expect(locator).toHaveText(expected) failed"
+    },
+    {
+      "titel": "omschrijving komt overeen met de verwachte tekst",
+      "status": "passed",
+      "duurMs": 533,
+      "verwacht": null,
+      "werkelijk": null,
+      "fout": ""
+    },
+    {
+      "titel": "prijs is € 1,99",
+      "status": "failed",
+      "duurMs": 5399,
+      "verwacht": "€ 1,99",
+      "werkelijk": "€ 1,35",
+      "fout": "Error: expect(locator).toHaveText(expected) failed"
+    },
+    {
+      "titel": "achtergrondkleur is lichtgeel (#fff7e0)",
+      "status": "failed",
+      "duurMs": 5437,
+      "verwacht": "rgb(255, 247, 224)",
+      "werkelijk": "rgb(226, 224, 255)",
+      "fout": "Error: expect(locator).toHaveCSS(expected) failed"
+    }
+  ]
+}
