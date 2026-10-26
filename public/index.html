@@ -378,6 +378,19 @@ shop.addEventListener("contextmenu",e=>{
   openEditor(doel ? doel.dataset.edit : "pagina", e.clientX, e.clientY);
 });
 
+// Staat het testrapport al open in een ander tabblad, dan ververst dat zichzelf.
+// Alleen als geen enkel rapporttabblad binnen 300 ms antwoordt, openen we een nieuw tabblad.
+function toonRapport(url){
+  if(!("BroadcastChannel" in window)) return window.open(url + "?t=" + Date.now(), "_blank", "noopener");
+  const kanaal = new BroadcastChannel("testrapport");
+  let gevonden = false;
+  kanaal.onmessage = e => { if(e.data === "aanwezig") gevonden = true; };
+  kanaal.postMessage("nieuw-rapport");
+  setTimeout(()=>{
+    kanaal.close();
+    if(!gevonden) window.open(url + "?t=" + Date.now(), "_blank", "noopener");
+  }, 300);
+}
 // Bewerkmodus: aan = tikken opent het bewerkvenster. Uit = wijzigingen committen en pushen.
 let bewerkmodus = false;
 $("potlood").onclick = async function(){
@@ -396,7 +409,7 @@ $("potlood").onclick = async function(){
     if(!r.ok && !d.bericht) throw new Error(d.fout || r.status);
     toast(d.bericht || "Klaar");
     if(d.output) console.log(d.output);  // volledige Playwright-output in LOCAL_ONLY-modus
-    if(d.rapportUrl) window.open(d.rapportUrl + "?t=" + Date.now(), "_blank", "noopener");
+    if(d.rapportUrl) toonRapport(d.rapportUrl);
   }catch(e){
     toast("Mislukt: " + e.message);
   }finally{

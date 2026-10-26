@@ -138,6 +138,15 @@ async function laadRapport(){
 }
 
 laadRapport();
+// Na een nieuwe testrun laat de actiepagina het weten; dan verversen we hier in plaats van een nieuw tabblad.
+if("BroadcastChannel" in window){
+  const kanaal = new BroadcastChannel("testrapport");
+  kanaal.onmessage = e => {
+    if(e.data !== "nieuw-rapport") return;
+    kanaal.postMessage("aanwezig");
+    laadRapport();
+  };
+}
 })();
 </script>
 </body>
