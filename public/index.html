@@ -218,7 +218,7 @@ document.addEventListener("keydown", async e=>{
   e.preventDefault();
   if(offline || !confirm("Pagina terugzetten naar de standaardinstellingen?")) return;
   const r = await fetch("api/reset", { method:"POST" });
-  toast(r.ok ? "Teruggezet en naar GitHub gestuurd" : "Reset mislukt");
+  toast(r.ok ? "Teruggezet naar de standaardinstellingen" : "Reset mislukt");
   aantal = 0; laadConfig();
 });
 
