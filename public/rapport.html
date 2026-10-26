@@ -42,6 +42,18 @@ body{margin:0;background:#fff7e0;color:#2b2b2b;font-family:Figtree,system-ui,-ap
 .diff-blok code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-word;white-space:pre-wrap}
 .fout-ruw{margin-top:10px;background:#fafafa;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:.82rem;color:#374151;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;overflow-x:auto}
 
+/* Tijdens een testrun */
+.spinner{display:inline-block;width:1em;height:1em;border:3px solid rgba(255,255,255,.3);border-top-color:#ffd166;border-radius:50%;vertical-align:-.15em;margin-right:8px;animation:draai .8s linear infinite}
+.voortgang{height:5px;background:#0e2442;overflow:hidden;visibility:hidden}
+.voortgang::before{content:"";display:block;height:100%;width:35%;background:#ffd166;animation:schuif 1.4s ease-in-out infinite}
+body.bezig .voortgang{visibility:visible}
+body.bezig .test{opacity:.6}
+body.bezig .diff,body.bezig .fout-ruw{display:none}
+.marker.draait{width:28px;height:28px;border:3px solid #e7e2d4;border-top-color:#14325c;border-radius:50%;animation:draai .8s linear infinite}
+@keyframes draai{to{transform:rotate(360deg)}}
+@keyframes schuif{from{transform:translateX(-100%)}to{transform:translateX(290%)}}
+@media (prefers-reduced-motion:reduce){.spinner,.marker.draait,.voortgang::before{animation-duration:3s}}
+
 .leeg{text-align:center;color:#6b6457;margin:40px 0}
 .voet{max-width:980px;margin:0 auto 40px;padding:0 24px;color:#6b6457;font-size:.9rem;display:flex;gap:16px;flex-wrap:wrap}
 .voet a{color:#14325c}
@@ -61,6 +73,7 @@ body{margin:0;background:#fff7e0;color:#2b2b2b;font-family:Figtree,system-ui,-ap
     <p class="samenvatting" id="samenvatting">Rapport wordt geladen…</p>
   </div>
 </section>
+<div class="voortgang" aria-hidden="true"></div>
 
 <main class="lijst" id="lijst">
   <p class="leeg">Rapport wordt geladen…</p>
@@ -89,7 +102,32 @@ document.querySelectorAll("[data-logo]").forEach(laadLogo);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
 const sec = ms => (Math.max(0, ms)/1000).toFixed(2).replace(".",",");
 
+// Animatie zolang Playwright draait; laadRapport() zet hem weer uit.
+let bezigTimer = null;
+function toonBezig(){
+  if(bezigTimer) return;
+  const sam = document.getElementById("samenvatting");
+  const start = Date.now();
+  const teken = () => {
+    sam.innerHTML = `<span class="spinner"></span>Tests draaien… ${Math.floor((Date.now() - start) / 1000)} s`;
+  };
+  teken();
+  bezigTimer = setInterval(teken, 1000);
+  document.body.classList.add("bezig");
+  document.querySelectorAll(".test").forEach(t => {
+    t.querySelector(".marker").className = "marker draait";
+    t.querySelector(".marker").textContent = "";
+    t.querySelector(".duur").textContent = "Wordt getest…";
+  });
+}
+function stopBezig(){
+  clearInterval(bezigTimer);
+  bezigTimer = null;
+  document.body.classList.remove("bezig");
+}
+
 async function laadRapport(){
+  stopBezig();
   const sam = document.getElementById("samenvatting");
   const lijst = document.getElementById("lijst");
   try {
@@ -144,6 +182,8 @@ laadRapport();
 if("BroadcastChannel" in window){
   const kanaal = new BroadcastChannel("testrapport");
   kanaal.onmessage = e => {
+    if(e.data === "tests-bezig") return toonBezig();
+    if(e.data === "tests-klaar") return laadRapport();
     if(e.data !== "nieuw-rapport") return;
     kanaal.postMessage("aanwezig");
     laadRapport();

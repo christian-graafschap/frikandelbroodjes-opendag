@@ -219,6 +219,7 @@ document.addEventListener("keydown", async e=>{
   if(offline || !confirm("Pagina terugzetten naar de standaardinstellingen?")) return;
   const r = await fetch("api/reset", { method:"POST" });
   toast(r.ok ? "Teruggezet naar de standaardinstellingen" : "Reset mislukt");
+  if(r.ok) meldRapport("nieuw-rapport");
   aantal = 0; laadConfig();
 });
 
@@ -391,6 +392,10 @@ function toonRapport(url){
     if(!gevonden) window.open(url + "?t=" + Date.now(), "_blank", "noopener");
   }, 300);
 }
+// Stuurt een bericht naar open rapporttabbladen ("tests-bezig", "tests-klaar" of "nieuw-rapport").
+function meldRapport(bericht){
+  if("BroadcastChannel" in window) new BroadcastChannel("testrapport").postMessage(bericht);
+}
 // Bewerkmodus: aan = tikken opent het bewerkvenster. Uit = wijzigingen committen en pushen.
 let bewerkmodus = false;
 $("potlood").onclick = async function(){
@@ -403,6 +408,9 @@ $("potlood").onclick = async function(){
   this.disabled = true;
   const herstel = this.textContent;
   this.textContent = "⏳ Verwerken…";
+  // Alleen in de offline modus draaien de tests hier; dan laat het open rapport een animatie zien.
+  const lokaal = await fetch("/api/modus").then(r => r.json()).then(d => d.lokaal).catch(() => false);
+  if(lokaal) meldRapport("tests-bezig");
   try{
     const r = await fetch("/api/push", { method:"POST", headers:{"Content-Type":"application/json"}, body: "{}" });
     const d = await r.json().catch(()=>({}));
@@ -410,7 +418,9 @@ $("potlood").onclick = async function(){
     toast(d.bericht || "Klaar");
     if(d.output) console.log(d.output);  // volledige Playwright-output in LOCAL_ONLY-modus
     if(d.rapportUrl) toonRapport(d.rapportUrl);
+    else if(lokaal) meldRapport("tests-klaar");
   }catch(e){
+    if(lokaal) meldRapport("tests-klaar");
     toast("Mislukt: " + e.message);
   }finally{
     this.disabled = false;

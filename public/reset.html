@@ -34,6 +34,8 @@ document.getElementById("reset").addEventListener("click", async () => {
     const r = await fetch("/api/reset", { method: "POST" });
     if (!r.ok) throw new Error(r.status);
     st.className = "status ok"; st.textContent = "Teruggezet naar de standaardinstellingen.";
+    // Een open testrapport laat dan weer het standaardrapport zien.
+    if ("BroadcastChannel" in window) new BroadcastChannel("testrapport").postMessage("nieuw-rapport");
   } catch (e) {
     st.className = "status fout"; st.textContent = "Reset mislukt: " + e.message;
   }
